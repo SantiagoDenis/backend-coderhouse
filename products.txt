@@ -1,1 +1,1 @@
-[]
+[{"title":"ruler","price":70.5,"thumbnail":"generic url","id":1},{"title":"pencil","price":40,"thumbnail":"generic url","id":2},{"title":"notebook","price":290,"thumbnail":"generic url","id":3}]

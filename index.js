@@ -1,8 +1,10 @@
+/****************************************************** Files in Nodejs. Challenge class 4 ******************************************************/
+
+
 //Calling File System
 const fs = require('fs')
-//Declaring an array of products which i'll use for the products.txt file
 
-//Functio to write or overwrite a file
+//Function to write or overwrite a file
 const overwriteFile = async (fileName, array) => {
     try {
         await fs.promises.writeFile(`${fileName}`, JSON.stringify(array))
@@ -25,25 +27,35 @@ const getArray = async (fileName) => {
     }
 }
 
+//Function to prevent the function save to save duplicate products
+const isInArray = async (fileName, title) => {
+    const array = await getArray(fileName)
+    return array.some(element => element.title === title)
+}
+
 class Container {
     //the constructor with the file's name
     constructor(fileName) {
         this.fileName = fileName
     }
-    //save method that ads an id to the product object depending on where its position is, and pushes it to the array. Then, writes the file with it.
+    //save method that adds an id to the product object depending on where its position is, and pushes it to the array. Then, writes the file with it.
     async save(object) {
         try {
 
             let array = await getArray(this.fileName)
-            const newObject = {
-                ...object,
-                id: array.length + 1
-            }
-            array.push(newObject)
-    
-            await overwriteFile(this.fileName, array)
+            let isRepeated = await isInArray(this.fileName, object.title)
+            if (!isRepeated) {
 
-            return newObject.id
+                const newObject = {
+                    ...object,
+                    id: array.length + 1
+                }
+                array.push(newObject)
+        
+                await overwriteFile(this.fileName, array)
+    
+                return newObject.id
+            }
         } catch {
             throw new Error('problem with save method of the object')
         }
@@ -109,30 +121,52 @@ const executeMethods = async () => {
             price: 290,
             thumbnail: 'generic url'
         })
-        //Console logging all the products
-        console.log(await product.getAll())
-    
-        //COnsole logging just a single product by the id
-        console.log(await product.getById(3))
-    
-        //Deleting a product by its id
-        await product.deleteById(3)
-    
-        //Showing the products without the previously deleted
-        console.log(await product.getAll())
-        
-        //Deleting all product
-        await product.deleteAll()
-    
-        //Showing the empty array
-        console.log(await product.getAll())
+        return product
 
     } catch(error) {
 
-        console.log(error)
+        console.error(`The error is: ${error}`)
 
     }
 
 }
-
 executeMethods()
+
+/****************************************************** First Express Server: Challenge class 6 ******************************************************/
+
+//Requesting the library from the pre-installed module
+const express = require('express')
+const app = express()
+
+//Function to read the products.txt file so i can output it in the .get responses 
+const readArray = async() => {
+    const exists = fs.existsSync('products.txt')
+    if(exists) {
+        return JSON.parse(await fs.promises.readFile('products.txt'))
+    }
+}
+//sarasa
+//First get response. Just to show something to the user. Not part of the instructions for the challenge
+app.get('/', (request, response) => {
+    response.send('<h1>You are in the main page!</h1><br/><ul><li>Go to "/products" to see all the array</li><li>Or, go to "/productsRandom" to see some a random choosen product!</li></ul>')
+})
+
+//Get response for localhost:8080/products. The output: The array of products
+app.get('/products', async (request, response) => {
+    let array = await readArray()
+    response.send(array)
+    
+})
+
+//Get response for localhost:8080/productsRandom. The output: One random chosen product
+app.get('/productsRandom', async (request, response) => {
+    let array = await readArray()
+    let num = Math.floor(Math.random() * array.length)
+    response.send(array[num])
+})
+
+//Listener for the server
+const server = app.listen(8080, () => console.log(`Server active at port: ${server.address().port}`))
+
+//Error handler for the server listener
+server.on('error', (error) => console.error(`Error on listening to server: ${error}`));
