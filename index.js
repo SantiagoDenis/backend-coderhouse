@@ -1,6 +1,5 @@
 /****************************************************** Files in Nodejs. Challenge class 4 ******************************************************/
 
-
 //Calling File System
 const fs = require('fs')
 
@@ -66,9 +65,9 @@ class Container {
         try {
             let array = await getArray(this.fileName)
             const findId = array.find(object => object.id === id)
-            return findId ? findId : null
+            return findId ? findId : {error: 'Product not found'}
         } catch {
-            throw new Error('Couldt get the element by id')
+            throw new Error('Couldnt get the element by id')
         }
     }
 
@@ -80,14 +79,29 @@ class Container {
             throw new Error('Couldt get all the elements')
         }
     }
+
     //I filter the array and return a new one without the object with that id
     async deleteById(id) {
         try {
             let array = await getArray(this.fileName)
-            array = array.filter(product => product.id !== id)
-            await overwriteFile(this.fileName, array)
+            const newArray = array.filter(product => product.id !== id)
+            await overwriteFile(this.fileName, newArray)
         } catch {
-            throw new Error('Couldt delete the element by id')
+            throw new Error('Couldnt delete the element by id')
+        }
+    }
+
+    async updateById(id, title, price, thumbnail) {
+        try {
+            let array = await getArray(this.fileName)
+            if(id > array.length) {
+                return {error: 'Product not found'}
+            }
+            array.splice(id - 1, 1, {title: title, price: price, thumbnail: thumbnail, id: id})
+            await overwriteFile(this.fileName, array)
+            return array
+        } catch {
+            throw new Error('Couldnt update the product')
         }
     }
 
@@ -101,34 +115,13 @@ class Container {
 
 }
 
-
-
 const executeMethods = async () => {
     try {
         const product = new Container('products.txt')
-        await product.save({
-            title: 'ruler',
-            price: 70.5,
-            thumbnail: 'generic url'
-        })
-        await product.save({
-            title: 'pencil',
-            price: 40,
-            thumbnail: 'generic url'
-        })
-        await product.save({
-            title: 'notebook',
-            price: 290,
-            thumbnail: 'generic url'
-        })
         return product
-
     } catch(error) {
-
         console.error(`The error is: ${error}`)
-
     }
-
 }
 executeMethods()
 
@@ -145,7 +138,7 @@ const readArray = async() => {
         return JSON.parse(await fs.promises.readFile('products.txt'))
     }
 }
-//sarasa
+
 //First get response. Just to show something to the user. Not part of the instructions for the challenge
 app.get('/', (request, response) => {
     response.send('<h1>You are in the main page!</h1><br/><ul><li>Go to "/products" to see all the array</li><li>Or, go to "/productsRandom" to see some a random choosen product!</li></ul>')
@@ -165,8 +158,73 @@ app.get('/productsRandom', async (request, response) => {
     response.send(array[num])
 })
 
+/****************************************************** Router & Multer: Challenge class 8 ******************************************************/
+
+//Notes: I will be using all the methods and the array of products from the class from challenge class 4.
+//       You can go to the index.html file by using http:localhost/index.html
+
+//getting the router
+const {Router} = express
+const router = Router()
+
+//Middlewares to read as json and to read the encoded data from the form
+app.use(express.json())
+app.use(express.urlencoded({extended:true}))
+
+//Using the public folder as static value. 
+app.use(express.static(__dirname + '/public'))
+
+//Getter of products by accessing /api/products
+router.get('/', async(req, res) => {
+    let products = await (await executeMethods()).getAll()
+    res.json(products)
+})
+
+router.get('/:id', async(req, res) => {
+    let id = parseInt(req.params.id)
+    let product = await (await executeMethods()).getById(id)
+    res.json(await product)
+})
+
+//Post of a product by using the form in index or thunder client
+router.post('/', async(req, res) => {
+    const product = req.body
+    await (await executeMethods()).save({
+        title: product.title,
+        price: product.price,
+        thumbnail: product.thumbnail
+    })
+    const products = await (await executeMethods()).getAll()
+    res.json(products)
+})
+
+//I created a new method in the class (updateById) to use for this specific situation
+router.put('/:id', async(req, res) => {
+    let id = parseInt(req.params.id)
+    const product = req.body
+    const newArray = await (await executeMethods()).updateById(id, product.title, product.price, product.thumbnail)
+    res.json(newArray)
+})
+
+router.delete('/:id', async(req, res) => {
+    let id = parseInt(req.params.id)
+    const productsBefore = await (await executeMethods()).getAll()
+    await (await executeMethods()).deleteById(id)
+    if(id > productsBefore.length) {
+        res.json({error: 'Product not found'})
+    } else {
+        const productsAfter = await (await executeMethods()).getAll()
+        res.json(productsAfter)
+    } 
+
+})
+
+//Using the router, with /api/products as the base uri
+app.use('/api/products', router)
+
 //Listener for the server
 const server = app.listen(8080, () => console.log(`Server active at port: ${server.address().port}`))
 
 //Error handler for the server listener
 server.on('error', (error) => console.error(`Error on listening to server: ${error}`));
+//Products array in products.txt
