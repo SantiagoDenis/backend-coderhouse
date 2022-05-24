@@ -1,0 +1,3 @@
+I personally prefer pugjs. I think its syntax is very developer-friendly. At first, it was hard to write because i'm very used to write with closing tags. But once i got used to it, it was really easy to code and read.
+The other two template engines are similar to writing plain html. Although I still choose pug, handlebars was not that hard either.I really liked to iterate the array and return some html using each or to use the if conditional. It reminded me to React.
+The one I didn't like was ejs. I consider it way to over-complicated.

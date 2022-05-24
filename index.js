@@ -145,11 +145,11 @@ app.get('/', (request, response) => {
 })
 
 //Get response for localhost:8080/products. The output: The array of products
-app.get('/products', async (request, response) => {
+/* app.get('/products', async (request, response) => {
     let array = await readArray()
     response.send(array)
     
-})
+}) */
 
 //Get response for localhost:8080/productsRandom. The output: One random chosen product
 app.get('/productsRandom', async (request, response) => {
@@ -175,10 +175,10 @@ app.use(express.urlencoded({extended:true}))
 app.use(express.static(__dirname + '/public'))
 
 //Getter of products by accessing /api/products
-router.get('/', async(req, res) => {
+/* router.get('/', async(req, res) => {
     let products = await (await executeMethods()).getAll()
     res.json(products)
-})
+}) */
 
 router.get('/:id', async(req, res) => {
     let id = parseInt(req.params.id)
@@ -220,7 +220,34 @@ router.delete('/:id', async(req, res) => {
 })
 
 //Using the router, with /api/products as the base uri
-app.use('/api/products', router)
+app.use('/products', router)
+
+
+/* const { engine } = require('express-handlebars')
+
+app.engine('handlebars', engine())
+app.set('views', './hbs_views')
+app.set('view engine', 'handlebars')
+router.get('/', async(req, res) => {
+    let products = await (await executeMethods()).getAll()
+    res.render('home', {products: products})
+})
+ */
+
+app.set('views', './pug_views')
+app.set('view engine', 'pug')
+router.get('/', async(req, res) => {
+    let products = await (await executeMethods()).getAll()
+    res.render('index', {products: products})
+}) 
+
+/* app.set('views', './ejs_views')
+app.set('view engine', 'ejs')
+
+router.get('/', async(req, res) => {
+    let products = await (await executeMethods()).getAll()
+    res.render('index', {products: products})
+}) */
 
 //Listener for the server
 const server = app.listen(8080, () => console.log(`Server active at port: ${server.address().port}`))
