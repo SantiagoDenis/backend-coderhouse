@@ -128,7 +128,7 @@ executeMethods()
 /****************************************************** First Express Server: Challenge class 6 ******************************************************/
 
 //Requesting the library from the pre-installed module
-const express = require('express')
+/* const express = require('express')
 const app = express()
 
 //Function to read the products.txt file so i can output it in the .get responses 
@@ -142,7 +142,7 @@ const readArray = async() => {
 //First get response. Just to show something to the user. Not part of the instructions for the challenge
 app.get('/', (request, response) => {
     response.send('<h1>You are in the main page!</h1><br/><ul><li>Go to "/products" to see all the array</li><li>Or, go to "/productsRandom" to see some a random choosen product!</li></ul>')
-})
+}) */
 
 //Get response for localhost:8080/products. The output: The array of products
 /* app.get('/products', async (request, response) => {
@@ -152,19 +152,19 @@ app.get('/', (request, response) => {
 }) */
 
 //Get response for localhost:8080/productsRandom. The output: One random chosen product
-app.get('/productsRandom', async (request, response) => {
+/* app.get('/productsRandom', async (request, response) => {
     let array = await readArray()
     let num = Math.floor(Math.random() * array.length)
     response.send(array[num])
 })
-
+ */
 /****************************************************** Router & Multer: Challenge class 8 ******************************************************/
 
 //Notes: I will be using all the methods and the array of products from the class from challenge class 4.
 //       You can go to the index.html file by using http:localhost/index.html
 
 //getting the router
-const {Router} = express
+/* const {Router} = express
 const router = Router()
 
 //Middlewares to read as json and to read the encoded data from the form
@@ -173,12 +173,6 @@ app.use(express.urlencoded({extended:true}))
 
 //Using the public folder as static value. 
 app.use(express.static(__dirname + '/public'))
-
-//Getter of products by accessing /api/products
-/* router.get('/', async(req, res) => {
-    let products = await (await executeMethods()).getAll()
-    res.json(products)
-}) */
 
 router.get('/:id', async(req, res) => {
     let id = parseInt(req.params.id)
@@ -219,27 +213,28 @@ router.delete('/:id', async(req, res) => {
 
 })
 
-//Using the router, with /api/products as the base uri
-app.use('/products', router)
-
-
-/* const { engine } = require('express-handlebars')
-
+const { engine } = require('express-handlebars')
 app.engine('handlebars', engine())
 app.set('views', './hbs_views')
 app.set('view engine', 'handlebars')
+
 router.get('/', async(req, res) => {
     let products = await (await executeMethods()).getAll()
     res.render('home', {products: products})
 })
+
+
+//Using the router, with /api/products as the base uri
+app.use('/products', router)
  */
 
-app.set('views', './pug_views')
+
+/* app.set('views', './pug_views')
 app.set('view engine', 'pug')
 router.get('/', async(req, res) => {
     let products = await (await executeMethods()).getAll()
     res.render('index', {products: products})
-}) 
+})  */
 
 /* app.set('views', './ejs_views')
 app.set('view engine', 'ejs')
@@ -250,8 +245,10 @@ router.get('/', async(req, res) => {
 }) */
 
 //Listener for the server
-const server = app.listen(8080, () => console.log(`Server active at port: ${server.address().port}`))
+//const server = app.listen(8080, () => console.log(`Server active at port: ${server.address().port}`))
 
 //Error handler for the server listener
-server.on('error', (error) => console.error(`Error on listening to server: ${error}`));
+//server.on('error', (error) => console.error(`Error on listening to server: ${error}`));
 //Products array in products.txt
+
+//IMPORTANT, Challenge class 12: I commented everithing so it won't be any confilct, the code is in main.js and server.js as requested by the challenge

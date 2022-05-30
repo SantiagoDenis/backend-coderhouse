@@ -1,27 +1,38 @@
-{{#if products}}
-    <table class="table table-dark">
-        <thead>
-            <tr>
-                <th scope="col">Name</th>
-                <th scope="col">Price</th>
-                <th scope="col">Thumbnail</th>
-            </tr>
-        </thead>
-        <tbody>
-            {{#each products}}
+
+    <h1>Products</h1>
+    <div class="container">
+        <form onsubmit="return addProducts()">
+            <div class="mb-3">
+              <label for="exampleInputEmail1" class="form-label">Product Name:</label>
+              <input type="text" class="form-control" id="inputTitle" name="title" placeholder="Enter the product's name here">
+            </div>
+            <div class="mb-3">
+              <label for="exampleInputEmail1" class="form-label">Product Price:</label>
+              <input type="number" class="form-control" id="inputPrice" name="price" placeholder="Enter the product's price here">
+            </div>
+            <div class="mb-3">
+              <label for="exampleInputEmail1" class="form-label">Product Thumbnail:</label>
+              <input type="text" class="form-control" id="inputThumbnail" name="thumbnail" placeholder="Enter the product's thumbnail here">
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+          </form>
+    </div>
+    {{#if products}}
+        <table class="table table-dark" id="table">
+            <thead>
                 <tr>
-                    
-                <td>{{this.title}}</td>
-                <td>${{this.price}}</td>
-                <td>
-                    <img src={{this.thumbnail}} alt="image of product" width="60px" height="60px">
-                </td>
-
+                    <th scope="col">Name</th>
+                    <th scope="col">Price</th>
+                    <th scope="col">Thumbnail</th>
                 </tr>
-            {{/each}}
-        </tbody>
-    </table>
-{{else}}
-    <h2>Theres's no products over here!</h2>
-{{/if}}
+            </thead>
+            <tbody>
+               
+            </tbody>
+        </table>
+    {{else}}
+        <h2>Theres's no products over here!</h2>
+    {{/if}}
+    <hr>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
