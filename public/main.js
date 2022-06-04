@@ -1,4 +1,4 @@
-//Initializing socket
+/* //Initializing socket
 const socket = io()
 
 //Functions to add messages and products by taking the value inserted in the inputs
@@ -66,4 +66,4 @@ socket.on('messages', (messages) => {
 })
 socket.on('products', (products) => {
     renderProducts(products)
-})
+}) */

@@ -1,3 +1,4 @@
+/*
 const express = require('express')
 const fs = require('fs')
 
@@ -126,7 +127,7 @@ const executeMethods = async () => {
 }
 executeMethods()
 
-//Setting up
+ //Setting up
 const { Server: HttpServer } = require('http')
 const { Server: SocketServer } = require('socket.io')
 
@@ -174,4 +175,4 @@ socketServer.on('connection', async(socket) => {
 })
 
 //Listening to the server but with http this time
-const server = httpServer.listen(8080, () => console.log(`Server active at port: ${server.address().port}`))
+const server = httpServer.listen(8080, () => console.log(`Server active at port: ${server.address().port}`)) */
