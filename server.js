@@ -1,136 +1,10 @@
-/*
-const express = require('express')
-const fs = require('fs')
 
-
-//IMPORTANT: I'll re-use some constructor methods to manipulate the array of both messages and products
-
-//Function to write or overwrite a file
-const overwriteFile = async (fileName, array) => {
-    try {
-        await fs.promises.writeFile(`${fileName}`, JSON.stringify(array))
-    } catch {
-        throw new Error('Problem with the writing of the file')
-    }
-}
-
-//Function to convert the file text into an array so i can manipulate it later
-const getArray = async (fileName) => {
-    try {        
-        const itExists = fs.existsSync(fileName)
-        if(itExists) {
-            return JSON.parse(await fs.promises.readFile(fileName));
-        } else {
-            return []
-        }
-    } catch {
-        throw new Error('Problem with getting the array out of the file')
-    }
-}
-
-//Function to prevent the function save to save duplicate products
-const isInArray = async (fileName, title) => {
-    const array = await getArray(fileName)
-    return array.some(element => element.title === title)
-}
-
-class Container {
-    //the constructor with the file's name
-    constructor(fileName) {
-        this.fileName = fileName
-    }
-    //save method that adds an id to the product object depending on where its position is, and pushes it to the array. Then, writes the file with it.
-    async save(object) {
-        try {
-
-            let array = await getArray(this.fileName)
-            let isRepeated = await isInArray(this.fileName, object.title)
-            if (!isRepeated) {
-
-                const newObject = {
-                    ...object,
-                    id: array.length + 1
-                }
-                array.push(newObject)
-        
-                await overwriteFile(this.fileName, array)
-    
-                return newObject.id
-            }
-        } catch {
-            throw new Error('problem with save method of the object')
-        }
-
-    }
-
-    async getById(id) {
-        try {
-            let array = await getArray(this.fileName)
-            const findId = array.find(object => object.id === id)
-            return findId ? findId : {error: 'Product not found'}
-        } catch {
-            throw new Error('Couldnt get the element by id')
-        }
-    }
-
-    async getAll() {
-        try {
-            let array = await getArray(this.fileName)
-            return array
-        } catch {
-            throw new Error('Couldt get all the elements')
-        }
-    }
-
-    //I filter the array and return a new one without the object with that id
-    async deleteById(id) {
-        try {
-            let array = await getArray(this.fileName)
-            const newArray = array.filter(product => product.id !== id)
-            await overwriteFile(this.fileName, newArray)
-        } catch {
-            throw new Error('Couldnt delete the element by id')
-        }
-    }
-
-    async updateById(id, title, price, thumbnail) {
-        try {
-            let array = await getArray(this.fileName)
-            if(id > array.length) {
-                return {error: 'Product not found'}
-            }
-            array.splice(id - 1, 1, {title: title, price: price, thumbnail: thumbnail, id: id})
-            await overwriteFile(this.fileName, array)
-            return array
-        } catch {
-            throw new Error('Couldnt update the product')
-        }
-    }
-
-    async deleteAll() {
-        try {
-            await overwriteFile(this.fileName, [])
-        } catch {
-            throw new Error('Problem with deleting the elements')
-        }
-    }
-
-}
-
-const executeMethods = async () => {
-    try {
-        const product = new Container('products.txt')
-        return product
-    } catch(error) {
-        console.error(`The error is: ${error}`)
-    }
-}
-executeMethods()
 
  //Setting up
 const { Server: HttpServer } = require('http')
 const { Server: SocketServer } = require('socket.io')
 
+const express = require('express')
 const app = express()
 //Sending the static values from the public folder
 app.use(express.static('public'))
@@ -145,34 +19,122 @@ app.engine('handlebars', engine())
 app.set('views', './hbs_views')
 app.set('view engine', 'handlebars')
 
+const Knex = require('knex')
+
+const mysqlOptions = {
+    host: '127.0.0.1',
+    user: 'root',
+    password: 'amorfoda70',
+    database: 'business'
+}
+
+const sqliteOptions = {
+    filename: './db/messages.sqlite'
+}
+
+const mysqlKnex = {
+    client: 'mysql2',
+    connection: mysqlOptions
+}
+
+const sqlite3Knex = {
+    client: 'sqlite3',
+    connection: sqliteOptions,
+    useNullAsDefault: true
+}
+
+class Container {
+    constructor(config, tableName) {
+        this.knex = Knex({
+            client: config.client,
+            connection: config.connection
+        })
+        this.tableName = tableName
+    }
+    //Function meant to be executed once, so that it can create the table.
+    async writeDB() {
+        if (this.tableName === 'messages') {
+
+            await this.knex.schema.dropTableIfExists(this.tableName)
+            await this.knex.schema.createTable(this.tableName, table => {
+                table.increments('id').primary()
+                table.string('userEmail', 30).notNullable()
+                table.string('userText', 255).notNullable()
+                table.string('fullDate', 255)
+            })
+        } else if (this.tableName === 'products') {
+            await this.knex.schema.dropTableIfExists(this.tableName)
+            await this.knex.schema.createTable(this.tableName, table => {
+                table.increments('id').primary()
+                table.string('title', 30).notNullable()
+                table.float('price').notNullable()
+                table.string('thumbnail', 255).notNullable()
+                table.integer('stock').notNullable()
+                table.string('description', 255).notNullable()
+                table.string('timestamp', 255)
+            })
+        }
+    }
+
+    date = new Date()
+    fullDate = `${this.date.getDate() < 10 ? '0' + (this.date.getDate() + 1) : (this.date.getDate() + 1)}/${this.date.getMonth() < 10 ? '0' + this.date.getMonth() : this.date.getMonth()}/${this.date.getFullYear()} ${this.date.getHours() < 10 ? '0' + (this.date.getHours()) : (this.date.getHours())}:${this.date.getMinutes() < 10 ? '0' + (this.date.getMinutes()) : (this.date.getMinutes())}:${this.date.getSeconds() < 10 ? '0' + (this.date.getSeconds()) : (this.date.getSeconds())}`
+
+    async save(obj) {
+        await this.knex(this.tableName).insert({...obj})
+    }
+
+    async getById(id) {
+        const element = await this.knex(this.tableName).where({"id": id})
+        return element
+    }
+
+    async getAll() {
+        const array = await this.knex.from(this.tableName).select('*')
+        return array
+    }
+
+    async deleteById(id) {
+        await this.knex(this.tableName).where({"id": id}).del()
+    }
+
+    async updateById(id,  title, price, thumbnail, stock, description) {
+        await this.knex(this.tableName).where({"id": id}).update({title: title, price: price, thumbnail: thumbnail, stock: stock, description: description})
+    }
+
+    async deleteAll() {
+        await this.knex(this.tableName).del()
+    }
+}
+
+
+const productsTable = new Container(mysqlKnex, 'products')
+const messagesTable = new Container(sqlite3Knex, 'messages')
+//messagesTable.writeDB()
+
 //Get to /products that sends the array and renders it
 app.get('/products', async(req, res) => {
-    let products = await (await executeMethods()).getAll()
+    const products = await productsTable.getAll()
     res.render('home', {products: products})
 })
 
 //Setting the connection socket event later to be called in the main.js file with the information
 socketServer.on('connection', async(socket) => {
-    const messages = await getArray('messages.txt')
-    const products = await getArray('products.txt')
+    const messages = await messagesTable.getAll()
+    const products = await productsTable.getAll()
 
-    //A doubdt I have here is wether or not the await is necessary. I think not because the promise its already finished with the await getArray()
     socket.emit('messages', await messages)
     socket.emit('products', await products)
 
     //On new_"X" event, i'll first push to the array the new info, write it in the txt file so that it lasts in memory and emit it globally.
     socket.on('new_message', (message) => {
-        messages.push(message)
-        overwriteFile('messages.txt', messages)
+        messagesTable.save(message)
         socketServer.sockets.emit('messages', messages)
     })
     socket.on('new_product', (product) => {
-        products.push(product)
-        overwriteFile('products.txt', products)
+        productsTable.save(product)
         socketServer.sockets.emit('products', products)
     })
-
 })
 
 //Listening to the server but with http this time
-const server = httpServer.listen(8080, () => console.log(`Server active at port: ${server.address().port}`)) */
+const server = httpServer.listen(8080, () => console.log(`Server active at port: ${server.address().port}`))
