@@ -1,13 +1,25 @@
 //Initializing socket
 const socket = io()
 
+const authorSchema = new normalizr.schema.Entity('author', {}, { idAttribute: 'id' });
+
+const messageSchema = new normalizr.schema.Entity('message', { author: authorSchema }, { idAttribute: '_id' })
+
+const messagesSchema = new normalizr.schema.Entity('posts', { mensajes: [messageSchema] }, { idAttribute: 'id' })
+
 //Functions to add messages and products by taking the value inserted in the inputs
 const messageReceptor = () => {
-    const userEmail = document.querySelector('#inputEmail').value
-    const userText = document.querySelector('#inputMessage').value
-    const date = new Date()
-    const fullDate = `${date.getDate() < 10 ? '0' + (date.getDate() + 1) : (date.getDate() + 1)}/${date.getMonth() < 10 ? '0' + date.getMonth() : date.getMonth()}/${date.getFullYear()} ${date.getHours() < 10 ? '0' + (date.getHours()) : (date.getHours())}:${date.getMinutes() < 10 ? '0' + (date.getMinutes()) : (date.getMinutes())}:${date.getSeconds() < 10 ? '0' + (date.getSeconds()) : (date.getSeconds())}`
-    const message = {userEmail, userText, fullDate}
+    const message = {
+        author: {
+            email: document.querySelector('#inputEmail').value,
+            nombre: document.querySelector('#firstName').value,
+            apellido: document.querySelector('#lastName').value,
+            edad: document.querySelector('#age').value,
+            alias: document.querySelector('#alias').value,
+            avatar: document.querySelector('#avatar').value
+        },
+        text: document.querySelector('#inputMessage').value
+    }
     socket.emit('new_message', message)
     return false
 }
@@ -15,6 +27,7 @@ const addProducts = () => {
     const title = document.querySelector('#inputTitle').value
     const price = document.querySelector('#inputPrice').value
     const thumbnail = document.querySelector('#inputThumbnail').value
+
     const product = {title, price, thumbnail}
     socket.emit('new_product', product)
     return false
@@ -22,13 +35,12 @@ const addProducts = () => {
 
 //Function that creates html with those input values
 const createHtml = (message) => {
-    const { userEmail, userText, fullDate} = message
     return (
         `
             <div>
-                <strong style="color:blue;">${userEmail}</strong>
-                <sm style="color:brown;">[${fullDate}]</sm>:
-                <em style="color:green;">${userText}</em>
+                <b style="color:blue;">${message.author}</b>
+                <sm style="color:brown;">[${message.timestamp}]</sm>:
+                <i style="color:green;">${message.text}</i>
             </div>
         `
     )
@@ -48,11 +60,13 @@ const createColumn = (product) => {
     )
 }
 
-//Function that uses the html to render onto the screen the values
 const renderMessages = (messages) => {
-    const html = messages.map(message => createHtml(message)).join(' ')
-    const messagesDiv = document.querySelector('#messages')
-    if(messagesDiv) messagesDiv.innerHTML = html
+
+    for(let i = 1; i <= messages.entities.posts.messages.messages.length; i++) {
+        createHtml(messages.entities.message[i])
+        const messagesDiv = document.querySelector('#messages')
+        if(messagesDiv) messagesDiv.innerHTML = createHtml(messages.entities.message[i])
+    }
 }
 const renderProducts = (products) => {
     const html = products.map(product => createColumn(product)).join(' ')
@@ -60,8 +74,19 @@ const renderProducts = (products) => {
     if (table) table.innerHTML = html
 }
 
-//responding to the sockets event
 socket.on('messages', (messages) => {
+    const normalizedMessagesLength = JSON.stringify(messages).length
+    console.log(messages, normalizedMessagesLength);
+
+    const denormalizedMessages = normalizr.denormalize(messages.result, messagesSchema, messages.entities)
+
+    const denormalizedMessagesLength = JSON.stringify(denormalizedMessages).length
+    console.log(denormalizedMessages, denormalizedMessagesLength);
+
+    const percentage = parseInt((denormalizedMessagesLength * 100) / normalizedMessagesLength)
+
+    document.getElementById('percentage').innerText = percentage
+
     renderMessages(messages)
 })
 socket.on('products', (products) => {
