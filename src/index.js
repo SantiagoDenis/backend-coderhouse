@@ -35,6 +35,9 @@ import ProductsContainer from './daos/products/productsFirebase.js' */
 
 import CartContainer from './daos/cart/cartMongodb.js'
 import ProductsContainer from './daos/products/productsMongodb.js'
+import MongoStore from 'connect-mongo'
+import session from 'express-session'
+import path from 'path'
 
 import mongoose from 'mongoose'
 mongoose.connect('mongodb+srv://Santi:0xaKPOnA4cviHG9t@cluster0.zioj8jm.mongodb.net/?retryWrites=true&w=majority', {
@@ -43,15 +46,31 @@ mongoose.connect('mongodb+srv://Santi:0xaKPOnA4cviHG9t@cluster0.zioj8jm.mongodb.
 })
 
 //getting the router
+import { engine } from 'express-handlebars'
 import express from 'express'
 const app = express()
 const {Router} = express
 const productsRouter = Router()
 const cartRouter = Router()
+const authRouter = Router()
 
 //Middlewares to read as json and to read the encoded data from the form
 app.use(express.json())
 app.use(express.urlencoded({extended:true}))
+app.use(express.static('public'))
+app.engine('handlebars', engine())
+app.set('views', '../hbs_views')
+app.set('view engine', 'handlebars')
+
+app.use(session({
+    store: MongoStore.create({ mongoUrl: 'mongodb+srv://Santi:0xaKPOnA4cviHG9t@cluster0.zioj8jm.mongodb.net/?retryWrites=true&w=majority' }),
+    secret: 'secret',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        maxAge: 60000
+    }
+}))
 
 const user = {
     isAdmin: true
@@ -61,6 +80,35 @@ const validation = (req, res, next) => {
     if (user.isAdmin) next()
     else res.status(401).send({error: 'You have no permission to enter'})
 }
+
+authRouter.get('/login', (req, res) => {
+    const name = req.session?.name
+    if (name) {
+        res.render('login', { name: name })
+    } else {
+        res.sendFile(path.join(process.cwd(),'../public/login.html'))
+    }
+})
+
+authRouter.get('/logout', (req, res) => {
+    const name = req.session?.name
+    if (name) {
+        req.session.destroy(err => {
+            if (!err) {
+                res.render('logout', { name: name })
+            } else {
+                console.log(err)
+            }
+        })
+    } else {
+        res.redirect('/login')
+    }
+})
+
+authRouter.post('/login', (req, res) => {
+    req.session.name = req.body.name
+    res.render('login', { name: req.session.name })
+})
 
 let productsDb = new ProductsContainer()
 let cartDb = new CartContainer()
@@ -165,6 +213,7 @@ cartRouter.delete('/:idCart/:idProduct', async(req, res) => {
 //Using the router, with /api/products as the base uri
 app.use('/api/products', productsRouter)
 app.use('/api/cart', cartRouter)
+app.use('/', authRouter)
 
 //Listener for the server
 const server = app.listen(8080, () => console.log(`Server active at port: ${server.address().port}`))
