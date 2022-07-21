@@ -1,43 +1,11 @@
-let dynamicCartImport
-let dynamicProductImport
-//No funciona poner en el package.json la variable de entorno. Tira error. Por lo tanto hay que hardcodear el resultado
-/* let simulationOfEnv = 'files' //reemplaza process.env.<variable>
-if(simulationOfEnv === 'files') {
-    dynamicCartImport = './daos/cart/cartFiles.js'
-    dynamicProductImport = './daos/products/productsFiles.js'
-}
-else if(simulationOfEnv === 'firebase'){
-    dynamicCartImport = './daos/cart/cartFirebase.js'
-    dynamicProductImport = './daos/products/productsFirebase.js'
-}
-else if(simulationOfEnv === 'memory'){
-    dynamicCartImport = './daos/cart/cartMemory.js'
-    dynamicProductImport = './daos/products/productsMemory.js'
-}
-else if(simulationOfEnv === 'mongodb'){
-    dynamicCartImport = './daos/cart/cartMongodb.js'
-    dynamicProductImport = './daos/products/productsMongodb.js'
-}
-console.log(dynamicCartImport, dynamicProductImport) */
 
-/* 
-IMPORTS PARA ARCHIVOS
-import CartContainer from './daos/cart/cartFiles.js'
-import ProductsContainer from './daos/products/productsFiles.js' */
-/*
-IMPORTS PARA MEMORIA
-import CartContainer from './daos/cart/cartMemory.js'
-import ProductsContainer from './daos/products/productsMemory.js' */
-/*
-IMPORTS PARA FIREBASE
-import CartContainer from './daos/cart/cartFirebase.js'
-import ProductsContainer from './daos/products/productsFirebase.js' */
 
 import CartContainer from './daos/cart/cartMongodb.js'
 import ProductsContainer from './daos/products/productsMongodb.js'
 import MongoStore from 'connect-mongo'
 import session from 'express-session'
 import path from 'path'
+import { passportAuthLogin, passportAuthRegister } from './passport.js'
 
 import mongoose from 'mongoose'
 mongoose.connect('mongodb+srv://Santi:0xaKPOnA4cviHG9t@cluster0.zioj8jm.mongodb.net/?retryWrites=true&w=majority', {
@@ -105,10 +73,17 @@ authRouter.get('/logout', (req, res) => {
     }
 })
 
-authRouter.post('/login', (req, res) => {
+authRouter.post('/login', passportAuthRegister, (req, res) => {
     req.session.name = req.body.name
     res.render('login', { name: req.session.name })
 })
+
+server.get('/login-error',(req, res) => {
+    return res.render('loginError', {name: 'logearse', path: 'login'})
+  })
+  server.get('/register-error', (req, res) => {
+    return res.render('registerError', {name: 'registrarse', path: 'register'})
+  })
 
 let productsDb = new ProductsContainer()
 let cartDb = new CartContainer()
