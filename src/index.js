@@ -5,10 +5,14 @@ import ProductsContainer from './daos/products/productsMongodb.js'
 import MongoStore from 'connect-mongo'
 import session from 'express-session'
 import path from 'path'
+import { fileURLToPath } from 'url';
 import { passportAuthLogin, passportAuthRegister } from './passport.js'
+import minimist from 'minimist'
+import dotenv from 'dotenv'
+dotenv.config({path: '../config.env'})
 
 import mongoose from 'mongoose'
-mongoose.connect('mongodb+srv://Santi:0xaKPOnA4cviHG9t@cluster0.zioj8jm.mongodb.net/?retryWrites=true&w=majority', {
+mongoose.connect(process.env.MONGO, {
     useNewUrlParser: true, 
     useUnifiedTopology: true
 })
@@ -16,6 +20,7 @@ mongoose.connect('mongodb+srv://Santi:0xaKPOnA4cviHG9t@cluster0.zioj8jm.mongodb.
 //getting the router
 import { engine } from 'express-handlebars'
 import express from 'express'
+import { fork } from 'child_process'
 const app = express()
 const {Router} = express
 const productsRouter = Router()
@@ -29,9 +34,8 @@ app.use(express.static('public'))
 app.engine('handlebars', engine())
 app.set('views', '../hbs_views')
 app.set('view engine', 'handlebars')
-
 app.use(session({
-    store: MongoStore.create({ mongoUrl: 'mongodb+srv://Santi:0xaKPOnA4cviHG9t@cluster0.zioj8jm.mongodb.net/?retryWrites=true&w=majority' }),
+    store: MongoStore.create({ mongoUrl: process.env.MONGO }),
     secret: 'secret',
     resave: false,
     saveUninitialized: false,
@@ -78,12 +82,12 @@ authRouter.post('/login', passportAuthRegister, (req, res) => {
     res.render('login', { name: req.session.name })
 })
 
-server.get('/login-error',(req, res) => {
+authRouter.get('/login-error',(req, res) => {
     return res.render('loginError', {name: 'logearse', path: 'login'})
-  })
-  server.get('/register-error', (req, res) => {
+})
+authRouter.get('/register-error', (req, res) => {
     return res.render('registerError', {name: 'registrarse', path: 'register'})
-  })
+})
 
 let productsDb = new ProductsContainer()
 let cartDb = new CartContainer()
@@ -185,13 +189,30 @@ cartRouter.delete('/:idCart/:idProduct', async(req, res) => {
     res.json(cartUpdated)
 })
 
+app.get('/info', (req, res) => {
+    res.send({'Arguments': process.argv, 'Platform name': process.platform, 'Node version': process.version, 'Memoria reservada': process.memoryUsage, 'path': process.cwd(), 'id': process.pid})
+})
+
+
+app.get('/random', (req, res) => {
+    const iterations = req.query.number || 20000
+    console.log('random iterations', `${iterations}`)
+    const forked = fork('./fork.js')
+    forked.send(`${iterations}`)
+    forked.on('message', (ms) => {
+        if (ms === 'finished') res.send('Process finished')
+    })
+})
+
 //Using the router, with /api/products as the base uri
 app.use('/api/products', productsRouter)
 app.use('/api/cart', cartRouter)
 app.use('/', authRouter)
 
+let args = minimist(process.argv, {alias: {'p': 'port'}})
+const port = process.env.PORT
 //Listener for the server
-const server = app.listen(8080, () => console.log(`Server active at port: ${server.address().port}`))
+const server = app.listen(args.port || port, () => console.log(`Server active at port: ${server.address().port}`))
 
 //Error handler for the server listener
 server.on('error', (error) => console.error(`Error on listening to server: ${error}`));

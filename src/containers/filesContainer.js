@@ -1,4 +1,4 @@
-'../../'
+
 import fs from 'fs'
 //Function to write or overwrite a file
 const overwriteDB = async (fileName, array) => {

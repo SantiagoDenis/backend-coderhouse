@@ -1,10 +1,7 @@
 import mongoose from 'mongoose'
 
 
-mongoose.connect('mongodb+srv://Santi:0xaKPOnA4cviHG9t@cluster0.zioj8jm.mongodb.net/?retryWrites=true&w=majority', {
-    useNewUrlParser: true, 
-    useUnifiedTopology: true
-})
+
 //this has to be hardcoded. If not, it doesnt let me enter the schema without interpreting it as undefined
 let productsSchema = new mongoose.Schema({
     title: {type: String, require: true, max: 50},

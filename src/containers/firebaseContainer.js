@@ -1,12 +1,14 @@
 
+import {SERVICEACC, DBURL} from process.env
+
 //Using imports drops an error, so i have to use this config to be able to use require
 import { createRequire } from "module"; // Bring in the ability to create the 'require' method
 const require = createRequire(import.meta.url); // construct the require method
 let admin = require('firebase-admin')
-let serviceAccount = require('./backend-coder-d835b-firebase-adminsdk-tuzib-30f61cc0ee.json') // use the require method
+let serviceAccount = SERVICEACC // use the require method
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-  databaseURL: "https://backend-coder-d835b.firebaseio.com"
+  databaseURL: DBURL
 });
 
 export class FirebaseContainer {
