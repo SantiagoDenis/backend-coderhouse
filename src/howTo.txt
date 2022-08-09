@@ -1,0 +1,12 @@
+iniciar el servidor en modo FORK
+
+node server  -modo FORK -p <nro de puerto>
+node server   -p <nro de puerto>
+
+
+iniciar el servidor en modo FORK
+
+node server  -modo CLUSTER -p <nro de puerto>
+
+
+Nginx escucha en el puerto 3000 y en el archivo conf están los detalles de las 2 partes del ejercicio.
