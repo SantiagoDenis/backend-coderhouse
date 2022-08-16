@@ -1,44 +1,30 @@
 {
-  "name": "desafio2",
+  "name": "entrega-16",
   "version": "1.0.0",
-  "description": "",
+  "description": "Entrega 16 para bootcamp de backend Coderhouse",
+  "author": "Esteban Demarchi",
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon",
-    "start": "DB=files node index.js"
+    "server": "nodemon --inspect ./src/server.js -p 3030"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/SantiagoDenis/backend-coderhouse.git"
-  },
-  "author": "",
+  "keywords": [],
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/SantiagoDenis/backend-coderhouse/issues"
-  },
-  "homepage": "https://github.com/SantiagoDenis/backend-coderhouse#readme",
   "dependencies": {
-    "@faker-js/faker": "^7.3.0",
-    "child_process": "^1.0.2",
-    "connect-mongo": "^4.6.0",
-    "cookie-parser": "^1.4.6",
-    "dotenv": "^16.0.1",
-    "express": "^4.18.1",
-    "express-handlebars": "^6.0.6",
-    "express-session": "^1.17.3",
-    "firebase-admin": "^11.0.0",
-    "handlebars": "^4.7.7",
-    "knex": "^2.1.0",
-    "minimist": "^1.2.6",
-    "mongoose": "^6.4.1",
-    "multer": "^1.4.4",
-    "mysql2": "^2.3.3",
-    "nodemon": "^2.0.16",
-    "normalizr": "^3.6.2",
-    "socket.io": "^4.5.1",
-    "sqlite3": "^5.0.8",
-    "uuid": "^8.3.2"
+    "autocannon": "7.9.0",
+    "compression": "1.7.4",
+    "connect-mongo": "4.6.0",
+    "cookie-parser": "1.4.6",
+    "dotenv": "16.0.0",
+    "express": "4.17.3",
+    "express-handlebars": "6.0.5",
+    "express-session": "1.17.2",
+    "log4js": "6.5.2",
+    "minimist": "1.2.6",
+    "mongoose": "6.3.0",
+    "session-file-store": "1.5.0"
+  },
+  "devDependencies": {
+    "eslint": "8.13.0"
   }
 }
