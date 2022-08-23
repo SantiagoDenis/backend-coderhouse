@@ -20,7 +20,7 @@ const __dirname = path.dirname(__filename);
 app.use(loggerMiddleware);
 app.use(express.static('public'));
 app.use(compression());
-app.set('views', '../src/views');
+app.set('views', './src/views');
 app.set('view engine', 'hbs');
 
 app.engine('hbs', engine({
