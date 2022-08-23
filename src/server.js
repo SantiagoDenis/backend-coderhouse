@@ -20,7 +20,7 @@ const __dirname = path.dirname(__filename);
 app.use(loggerMiddleware);
 app.use(express.static('public'));
 app.use(compression());
-app.set('views', './src/views');
+app.set('views', '../src/views');
 app.set('view engine', 'hbs');
 
 app.engine('hbs', engine({
@@ -54,8 +54,7 @@ app.use('/api/carrito', cartRouter);
 app.use('/api/usuario', userRouter);
 app.use('/test', otherRouter);
 
-
-app.all("*", (req, res) => {
+app.all("*", (_req, res) => {
     res.status(404).json({"error": "ruta no existente"})
   });
 
@@ -76,8 +75,7 @@ app._router.stack.forEach(function (r) {
     }
   });
 
-const { PORT } = minimist(process.argv.slice(2), options);
-
+const PORT = process.env.PORT;
 const server = app.listen(PORT, () => {
     logger.info(`🚀 Server started at http://localhost:${PORT}`)
     })
