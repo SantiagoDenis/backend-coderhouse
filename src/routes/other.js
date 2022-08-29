@@ -16,10 +16,9 @@ router.get('/info', (_req, res) => {
     };
     //console.log(processInfo);
     res.status(200).json(processInfo);
-    
 })
 
-const randomNumbersGeneratorFork = fork('../src/functions/randomNumbersGenerator.js')
+const randomNumbersGeneratorFork = fork('./src/functions/randomNumbersGenerator.js')
 
 router.get('/randoms', (req, res) => {
     
