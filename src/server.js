@@ -1,8 +1,8 @@
 import express from "express";
-import productRouter from './routes/product.js';
-import cartRouter from './routes/cart.js';
-import userRouter from './routes/user.js';
-import otherRouter from './routes/other.js';
+import productRouter from './routes/product.route.js';
+import cartRouter from './routes/cart.route.js';
+import userRouter from './routes/user.route.js';
+import otherRouter from './routes/other.route.js';
 import session from 'express-session';
 import {engine} from 'express-handlebars';
 import path from 'path';
@@ -10,7 +10,7 @@ import {fileURLToPath} from 'url';
 import mongoStore from 'connect-mongo';
 import compression from 'compression';
 import minimist from 'minimist';
-import logger from "./loggers/Log4jsLogger.js";
+import logger from "./utils/loggers/Log4jsLogger.js";
 import loggerMiddleware from "./middlewares/routesLogger.middleware.js";
 const app = express();
 

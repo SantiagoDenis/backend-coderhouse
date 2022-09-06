@@ -1,17 +1,14 @@
-# Desafío 18
-Lo mismo que he acumulado más lo definido aquí abajo
-----
+# Desafío 19
 
-## Registro de usuarios y aviso por email de la operación
+## Dividir en capas nuestro proyecto
 
-- Creamos un nuevo usuario
+### Consignas
 
-<img src="./imagesreadme/newUserSignUp.png" alt="Nuevo usuario ejemplo"/>
+- Dividir en capas el proyecto entregable con el que venimos trabajando (entregable clase 16: loggers y profilers),
+  agrupando apropiadamente las capas de ruteo, controlador, lógica de negocio y persistencia.
 
-- Observamos que se ha creado un nuevo documento en nuestra base de Mongo, además la contraseña está encriptada
+- Considerar agrupar las rutas por funcionalidad, con sus controladores, lógica de negocio con los casos de uso, y capa
+  de persistencia.
 
-<img src="./imagesreadme/newUserHashedPassword.png" alt="Contraseña encriptada ejemplo"/>
-
-- Recibimos un correo electrónico informando el UUID y fecha en la que se ha generado este usuario.
-
-<img src="./imagesreadme/emailExample.png" alt="Nuevo usuaro email ejemplo"/>
+- La capa de persistencia contendrá los métodos necesarios para atender la interacción de la lógica de negocio con los
+  propios datos.
