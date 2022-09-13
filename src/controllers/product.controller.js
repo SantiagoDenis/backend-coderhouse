@@ -1,6 +1,6 @@
 import {ProductoService} from "../services/producto.service.js";
 
-const productoService = new ProductoService();
+const productoService = ProductoService.getInstance();
 
 export async function getAll(req, res) {
     const products = await productoService.getAll();
@@ -20,7 +20,7 @@ export async function getById(req, res) {
 
 export async function create(req, res) {
     const {body} = req;
-    const newProduct = await productoService.createProduct(body);
+    const newProduct = await productoService.create(body);
 
     newProduct
         ? res.status(200).json({"success": "Product added with ID " + newProduct._id})
@@ -39,7 +39,7 @@ export async function update(req, res) {
 
 export async function remove(req, res) {
     const {id} = req.params;
-    const wasDeleted = await productoService.deleteProductById(id)
+    const wasDeleted = await productoService.deleteById(id)
 
     wasDeleted
         ? res.status(200).json({"success": "product successfully removed"})
