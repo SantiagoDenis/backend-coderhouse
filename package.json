@@ -1,17 +1,20 @@
 {
-  "name": "entrega-18",
+  "name": "entrega-21",
   "version": "1.0.0",
-  "description": "Entrega 18 para bootcamp de backend Coderhouse",
+  "description": "Entrega 21 para bootcamp de backend Coderhouse",
   "author": "Esteban Demarchi",
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "server": "nodemon --inspect ./src/server.js -p 3031"
+    "server": "nodemon --inspect ./src/server.js -p 3031",
+    "test": "jest",
+    "testReport": "jest --no-color 2>./testresults/TestResults_$(date +%F).txt"
   },
   "keywords": [],
   "license": "ISC",
   "dependencies": {
     "autocannon": "7.9.0",
+    "axios": "0.27.2",
     "bcrypt": "5.0.1",
     "bcryptjs": "^2.4.3",
     "compression": "1.7.4",
@@ -28,6 +31,7 @@
     "session-file-store": "1.5.0"
   },
   "devDependencies": {
-    "eslint": "8.13.0"
+    "eslint": "8.13.0",
+    "jest": "28.1.3"
   }
 }

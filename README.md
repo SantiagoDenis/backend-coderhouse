@@ -1,12 +1,38 @@
-# Desafío 20
+# Desafío 21
 
-## Mejorar la arquitectura de nuestra API
+## Testeamos nuestra API
 
-### Consignas
+Agregué testing de algunos controllers utilizando **Jest**, generé las Requests con **axios**.
 
-- Modificar la capa de persistencia incorporando los conceptos de Factory y DAO.
-- Los DAOs deben presentar la misma interfaz hacia la lógica de negocio de nuestro servidor.
-- El DAO seleccionado (por un parámetro en línea de comandos como lo hicimos anteriormente) será devuelto por una Factory para que la capa de negocio opere con el.
-- Cada uno de estos casos de persistencia, deberán ser implementados usando el patrón singleton que impida crear nuevas instancias de estos mecanismos de acceso a los datos.
-- Comprobar que si llamo a la factory dos veces, con una misma opción elegida, devuelva la misma instancia.
-- Implementar el patrón Repository para la persistencia de mensajes.
+```console
+test
+└── controllers
+    ├── other.test.js
+    └── product.test.js
+```
+
+Para correr los tests se puede ejecutar los siguientes comandos _(debe estár levantado el servidor)_
+
+### `npm run test`
+
+Este comando mostrará por terminal los resultados.
+
+
+### `npm run testReport`
+
+Mostrará los resultados por terminal y además guardará en la carpeta **_testresults_** un archivo con los resultados, el archivo está identificado con la fecha en que se corrió.
+
+Por ejemplo, el día 13 de Julio del 2022 corrí los tests, se generó **`TestResults_2022-07-13.txt`** en la carpeta `testresults`
+
+```console
+cat testresults/TestResults_2022-07-13.txt
+                                                       
+PASS test/controllers/other.test.js
+PASS test/controllers/product.test.js
+
+Test Suites: 2 passed, 2 total
+Tests:       3 passed, 3 total
+Snapshots:   0 total
+Time:        0.794 s, estimated 1 s
+Ran all test suites.
+```
