@@ -1,23 +1,37 @@
-# Desafío 23
+# Entrega Final
 
-## Reformar para usar otro framework (Koa)
+Esta entrega incluye lo realizado en las anteriores, para ver los detalles se pueden ver en cada README.
 
-### Consignas
+## Login, Logout y SignUp de usuario
 
-Elegir uno de los frameworks vistos en clase y trasladar a esta nueva plataforma el último proyecto entregable (con GraphQL) o al anterior (sin GraphQL).
+### Home
 
-*Verificar el correcto funcionamiento del servidor a nivel de sus rutas, vistas, lógica de negocio y persistencia.*
+En `/api/usuario`
 
-### Funcionamiento
+- ✅ Si el usuario se encuentra loggeado:
 
-En **`backend/Entrega-23`**
+<img src="./imagesReadme/homeLogged.png" alt="Home with logged user"/>
 
-### `npm run dev`
+- ❌ Si el usuario **no** se encuentra loggeado:
 
-```console
+<img src="./imagesReadme/homeNotLogged.png" alt="Home with unlogged user"/>
 
-[2022-07-23T20:13:56.088] [INFO] default - 🚀 Server started at http://localhost:6965
-[2022-07-23T20:13:56.095] [INFO] default - 🕸️ GraphQL Playground: http://localhost:6965/graphql
-[2022-07-23T20:13:56.117] [INFO] default - 🆗 Conectados a MongoDB
+### Sign Up
 
-```
+En `/api/usuario/signup`
+
+<img src="./imagesReadme/signUpView.png" alt="Sign up view"/>
+
+💡 Si se tiene configurada la cuenta de gmail y quitando el comentario de `user.controller.js:28` se recibirá un correo electrónico de que se ha creado un nuevo usuario.
+
+### Log in
+
+En `/api/usuario/login`
+
+<img src="./imagesReadme/loginView.png" alt="Login view"/>
+
+### Log out
+
+En `/api/usuario/logout`
+
+<img src="./imagesReadme/logoutView.png" alt="Logout view"/>

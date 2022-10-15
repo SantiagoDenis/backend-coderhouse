@@ -31,17 +31,19 @@ export class ProductoService extends BaseDao{
             return await ProductosModel.find();
         } catch (error) {
             this.logger.error(error);
-            return false;
+            return null;
         }
     }
     
-    async getProductById(id) {
+    async getProductById(objectId) {
         try {
-            const product = await ProductosModel.findById(id);
+            const product = await ProductosModel.findOne({
+                [this.ID_FIELD] : objectId
+            })
             return product;
         } catch (error) {
             this.logger.error(error);
-            return false;
+            return null;
         }
     }
     
@@ -50,7 +52,7 @@ export class ProductoService extends BaseDao{
             return await ProductosModel.create(object)
         } catch (error) {
             this.logger.error(error);
-            return false;
+            return null;
         }
     }
     
@@ -76,7 +78,7 @@ export class ProductoService extends BaseDao{
             return await ProductosModel.findByIdAndDelete({[this.ID_FIELD]: id})
         } catch (error) {
             this.logger.error(error);
-            return false;
+            return null;
         }
     }
     
